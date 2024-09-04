@@ -130,9 +130,24 @@ const Header = () => {
             {isWalletConnected ? (
               <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
             ) : (
+              'Login With ENS'
+            )}
+          </button>
+          <>
+          <button
+            onClick={() => {
+              isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
+            }}
+            className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+          >
+            <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
+            {isWalletConnected ? (
+              <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
+            ) : (
               'Connect Wallet'
             )}
           </button>
+          </>
           {isWalletConnected && showDropdown && (
             <div
               ref={dropdownRef}
@@ -149,12 +164,20 @@ const Header = () => {
                   </button>
                 ))
               ) : (
+                <>
+                 <button
+                  onClick={handleWalletConnection}
+                  className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
+                >
+                  Login with ENS
+                </button>
                 <button
                   onClick={handleWalletConnection}
                   className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
                 >
-                  Connect Wallet
-                </button>
+                  Login with ENS
+                  </button>
+                </>
               )}
               <button
                 onClick={handleWalletDisconnection}
