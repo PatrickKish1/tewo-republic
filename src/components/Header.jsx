@@ -186,6 +186,11 @@ const Header = () => {
                 ? walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4)
                 : "Connect Wallet"}
             </span>
+            <span className="ml-2">
+              {isWalletConnected
+                ? walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4)
+                : "Login with ENS"}
+            </span>
           </button>
           {isDropdownOpen && isWalletConnected && (
             <div
