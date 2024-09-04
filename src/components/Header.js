@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import equiLogo from '../assets/equibloc-logo.png';
+import tewoLogo from '../assets/tewo-logo.png';
 import walletIcon from '../assets/wallet.svg';
 import notificationIcon from '../assets/notification.svg';
 import Notification from './Notification';
@@ -13,6 +13,7 @@ const Header = () => {
   const [notification, setNotification] = useState({ show: false, message: '' });
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
 
   // Check for existing wallet connection state on component mount
   useEffect(() => {
@@ -94,7 +95,7 @@ const Header = () => {
     <header className="flex items-center justify-between p-5 bg-white border-b border-gray-200 relative">
       <div className="flex items-center">
         <Link to="/">
-          <img src={equiLogo} alt="EquiBloc Logo" height={40} width={160} />
+          <img src={tewoLogo} alt="EquiBloc Logo" height={40} width={160} />
         </Link>
       </div>
       

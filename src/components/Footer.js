@@ -1,5 +1,5 @@
 import React from "react";
-import footerLogo from "../assets/footer-logo.svg";
+import tewoLogo from "../assets/tewo-logo.png";
 import callIcon from "../assets/call.svg";
 import emailIcon from "../assets/email.svg";
 import linkedinIcon from "../assets/linkedin-white.svg";
@@ -12,14 +12,14 @@ const Footer = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start px-4">
         {/* Logo and Copyright */}
         <div className="mb-6 md:mb-0 md:ml-[80px]"> {/* Added margin-left for more spacing */}
-          <img src={footerLogo} alt="EquiBloc Logo" className="mb-2" />
-          <p>EquiBloc Copyright © 2024</p>
-          <p>EquiBloc - All rights Reserved.</p>
+          <img src={tewoLogo} alt="EquiBloc Logo" className="mb-2 ml-[-18px]" width={250} />
+          <p>Tewo Republic Copyright © 2024</p>
+          <p>Tewo Republic - All rights Reserved.</p>
         </div>
 
         {/* Contact Information */}
         <div className="mb-6 md:mb-0">
-          <h3 className="font-bold mb-2">Reach us</h3>
+          <h3 className="font-bold mb-[30px]">Reach us</h3>
           <div className="flex items-center mb-2">
             <img src={callIcon} alt="Call Icon" className="mr-2" />
             <span>+234 XXX XXX XXX</span>
@@ -32,7 +32,7 @@ const Footer = () => {
 
         {/* Legal Information */}
         <div className="mb-6 md:mb-0">
-          <h3 className="font-bold mb-2">Legal</h3>
+          <h3 className="font-bold mb-[30px]">Legal</h3>
           <ul className="space-y-1">
             <li>Privacy Policy</li>
             <li>Terms and Conditions</li>

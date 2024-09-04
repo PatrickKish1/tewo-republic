@@ -18,7 +18,12 @@ import twitterIcon from '../assets/TwitterX.svg';
 import instagramIcon from '../assets/Instagram.svg';
 import linkedinIcon from '../assets/LinkedIn.svg';
 import Products from './Products';
-
+import productImage1 from '../assets/rice-1.jpg';
+import productImage2 from '../assets/rice-2.jpg';
+import productImage3 from '../assets/tomatoes.jpg';
+import productImage4 from '../assets/yam.jpg';
+import productImage5 from '../assets/tomatoes-1.jpg';
+import productImage6 from '../assets/onions.jpg';
 
 function Home() {
   const products = Products.slice(0, 8);
@@ -33,7 +38,7 @@ function Home() {
 
         <div className="max-w-1/2 z-10 mb-[400px] ml-10 relative">
           <h2 className="text-gray-800 text-lg mt-4 mb-6">Looking For Affordable Products From Trusted Sources?!</h2>
-          <h3 className="text-red-600 text-5xl font-bold mb-2">AgroBiz Got You!</h3>
+          <h3 className="text-red-600 text-5xl font-bold mb-2">Tewo Republic Got You!</h3>
           <p className="text-gray-500 text-lg mb-2">Connect your wallet to get started</p>
           <Link>
             <button className="bg-green-600 text-white px-8 py-2 rounded-md font-bold">Get Started</button>
@@ -46,7 +51,21 @@ function Home() {
             <img src={bgHexagon2} alt="Background Hexagon" width={280} height={280} />
           </div>
           <div className="relative z-10 mr-24 mb-5">
-            <img src="https://img.buzzfeed.com/buzzfeed-static/static/2023-02/22/3/asset/5683c53a7513/sub-buzz-863-1677035525-1.jpg?crop=2923:1706;0,335" alt="Girl Coding Illustration" width={500} height={500} className='rounded-lg h-[420px] mb-[90px]'/>
+            <img src="https://img.buzzfeed.com/buzzfeed-static/static/2023-02/22/3/asset/5683c53a7513/sub-buzz-863-1677035525-1.jpg?crop=2923:1706;0,335" alt="Girl Coding Illustration" width={480} height={480} className='rounded-lg h-[420px] mb-[90px]'/>
+          </div>
+        </div>
+      </section>
+
+      {/* Products of the Day Carousel */}
+      <section className="relative text-center py-12 bg-white px-5 mt-0">
+        <h3 className="text-green-600 text-4xl mb-10 font-bold">Products of the Day</h3>
+        <div className="flex overflow-x-auto scrollbar-hide">
+          <div className="flex flex-nowrap space-x-6">
+            {[productImage1, productImage2, productImage3, productImage4, productImage5, productImage6].map((src, index) => (
+              <div key={index} className="flex-none w-64 h-64 bg-white rounded-lg shadow-md p-3">
+                <img src={src} alt={`Product ${index + 1}`} className="object-cover w-full h-full rounded-lg" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -122,22 +141,23 @@ function Home() {
           </p>
           <div className="flex gap-4">
             <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <img src={twitterIcon} alt="Twitter" width={40} height={40} />
+              <img src={twitterIcon} alt="Twitter" className="w-8 h-8" />
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-              <img src={instagramIcon} alt="Instagram" width={40} height={40} />
+              <img src={instagramIcon} alt="Instagram" className="w-8 h-8" />
             </a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <img src={linkedinIcon} alt="LinkedIn" width={40} height={40} />
+              <img src={linkedinIcon} alt="LinkedIn" className="w-8 h-8" />
             </a>
           </div>
-          <button className="bg-green-600 text-white px-8 py-2 rounded-md font-bold mt-5">
-            Learn More
-          </button>
         </div>
-
-        <div className="flex items-center">
-          <img src="https://img.freepik.com/premium-vector/people-shopping-cartoon-man-woman-buy-clothes-electronics-online-store-mobile-application-with-possibility-cashless-payment-discounts-vector-internet-shop-concept_176516-3547.jpg" alt="What We Do" width={1200} height={1200} />
+        <div className="relative">
+          <div className="absolute right-0 top-[-20px]">
+            <img src={bgHexagon2} alt="Background Hexagon" width={200} height={200} />
+          </div>
+          <div className="relative z-10">
+            <img src="https://img.buzzfeed.com/buzzfeed-static/static/2023-02/22/3/asset/5683c53a7513/sub-buzz-863-1677035525-1.jpg?crop=2923:1706;0,335" alt="Agrobiz Team" className="rounded-lg" width={500} height={500} />
+          </div>
         </div>
       </section>
     </div>
