@@ -34,4 +34,8 @@ At Tewo Republic, we’re making buying and selling food easier and fairer for e
 - Payment Gateway Integration.
 
 
+## CONTRACT ADDRESS
+
+- the contract is deployed to the lisk blockchain, the contract address is 0xaf766F9b026e59D5da7Cb19Fc263469D39112a88
+
 
