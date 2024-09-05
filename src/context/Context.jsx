@@ -1,10 +1,19 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import Web3 from "web3";
-import { types,
+import {
+  types,
   Web3ZKsyncL2,
   ZKsyncPlugin,
-  ZKsyncWallet, utils} from "web3-plugin-zksync";
-import { CONTRACT_ADDRESS, abi, priceFeedABI } from "../constant";
+  ZKsyncWallet,
+  utils,
+} from "web3-plugin-zksync";
+import {
+  CONTRACT_ADDRESS,
+  abi,
+  priceFeedABI,
+  nftAbi,
+  NFT_ADDRESS,
+} from "../constant";
 import { Models, ORAPlugin, Chain } from "@ora-io/web3-plugin-ora";
 import { ChainlinkPlugin } from "@chainsafe/web3-plugin-chainlink";
 import { EnsPlugin } from "@namespace-ens/web3-plugin-ens";
@@ -47,6 +56,27 @@ export const WalletProvider = ({ children }) => {
       console.log("MetaMask is not installed");
     }
   }, []);
+
+  const sendGiftcard = async (to, uri) => {
+    try {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+
+        const accounts = await web3.eth.requestAccounts();
+        const account = accounts[0];
+
+        const contract = new web3.eth.Contract(nftAbi, NFT_ADDRESS);
+
+        await contract.methods.mintNFT(to, uri).send({ from: account });
+
+        console.log("NFT minted successfully");
+      } else {
+        console.error("Ethereum wallet not detected");
+      }
+    } catch (error) {
+      console.error("Error minting NFT:", error);
+    }
+  };
 
   const generatePic = async (from, PROMPT) => {
     const web3 = new Web3("https://1rpc.io/sepolia");
@@ -94,7 +124,7 @@ export const WalletProvider = ({ children }) => {
     if (web3) {
       try {
         const address = await resolveENS(name);
-        setEnsName(name)
+        setEnsName(name);
         setAccount(address);
         setIsWalletConnected(true);
         const contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS);
@@ -160,7 +190,9 @@ export const WalletProvider = ({ children }) => {
   const getProduceById = async (produceId) => {
     if (tewoContract && account) {
       try {
-        const produce = await tewoContract.methods.getProduceById(produceId).call();
+        const produce = await tewoContract.methods
+          .getProduceById(produceId)
+          .call();
         console.log(`Produce with ID ${produceId}:`, produce);
         return produce;
       } catch (error) {
@@ -168,7 +200,6 @@ export const WalletProvider = ({ children }) => {
       }
     }
   };
-  
 
   const confirmDelivery = async (requestId) => {
     if (tewoContract && account) {
@@ -206,42 +237,40 @@ export const WalletProvider = ({ children }) => {
     return resolvedName;
   };
 
-  const getPaymasterAddress = async () =>{
-    const paymaster = await zksync.rpc.getTestnetPaymasterAddress()
+  const getPaymasterAddress = async () => {
+    const paymaster = await zksync.rpc.getTestnetPaymasterAddress();
     return paymaster;
-  }
-
-  
+  };
 
   async function claimTokens(wallet, zksync, userAddress, amount) {
-    const amountToTransfer = utils.parseEther(amount); 
-    const usdcAddress = "0xA1a9E8c73Ecf86AE7F4858D5Cb72E689cDc9eb3e"
-    
+    const amountToTransfer = utils.parseEther(amount);
+    const usdcAddress = "0xA1a9E8c73Ecf86AE7F4858D5Cb72E689cDc9eb3e";
+
     try {
-     
       const transfer = await wallet.transfer({
         to: userAddress,
         amount: amountToTransfer,
         token: usdcAddress,
       });
-  
+
       // Estimate gas fee
       const gasLimit = await transfer.estimateGas();
       const gasPrice = await wallet.provider.getGasPrice();
       const fee = gasLimit.mul(gasPrice);
-  
-      
+
       const balance = await wallet.getBalance(usdcAddress);
       if (balance.lt(amountToTransfer.add(fee))) {
         throw new Error("Insufficient balance to cover transfer and fee");
       }
-  
-    
-      const paymasterParams = utils.getPaymasterParams(wallet.provider.chainId, {
-        type: 'General',
-        innerInput: new Uint8Array(),
-      });
-  
+
+      const paymasterParams = utils.getPaymasterParams(
+        wallet.provider.chainId,
+        {
+          type: "General",
+          innerInput: new Uint8Array(),
+        }
+      );
+
       // Send the transaction with paymaster
       const tx = await wallet.sendTransaction({
         ...transfer,
@@ -250,44 +279,42 @@ export const WalletProvider = ({ children }) => {
         gasLimit,
         paymasterParams,
       });
-  
+
       // Wait for transaction to be mined
       const receipt = await tx.wait();
       console.log("Transaction successful:", receipt.transactionHash);
-      console.log(`Transferred ${utils.formatEther(amountToTransfer)} ETH to ${userAddress}`);
+      console.log(
+        `Transferred ${utils.formatEther(
+          amountToTransfer
+        )} ETH to ${userAddress}`
+      );
     } catch (error) {
       console.error("Error claiming tokens:", error);
     }
   }
 
   async function userBonus(amount) {
-   
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof window.ethereum !== "undefined") {
       try {
-      
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        
-     
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
         const web3 = new Web3(window.ethereum);
-        
-      
+
         web3.registerPlugin(
           new ZKsyncPlugin(
-            Web3ZKsyncL2.initWithDefaultProvider(types.Network.Sepolia),
-          ),
+            Web3ZKsyncL2.initWithDefaultProvider(types.Network.Sepolia)
+          )
         );
-        
+
         const zksync = web3.ZKsync;
-  
-       
+
         const accounts = await web3.eth.getAccounts();
         const currentAccount = accounts[0];
-  
-      
+
         const wallet = new zksync.Wallet(currentAccount);
-  
+
         console.log("Wallet address:", await wallet.getAddress());
-  
+
         // Call the claimTokens function
         await claimTokens(wallet, zksync, currentAccount, amount);
       } catch (error) {
@@ -316,7 +343,8 @@ export const WalletProvider = ({ children }) => {
         userBonus,
         getAllProduce,
         getProduceById,
-        ensName
+        sendGiftcard,
+        ensName,
       }}
     >
       {children}
