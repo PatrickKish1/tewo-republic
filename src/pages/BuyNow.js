@@ -8,7 +8,7 @@ import { useWallet } from '../context/Context';
 const BuyNow = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
-  const [convertedPrice, setConvertedPrice] = useState(null); // For storing the price in Naira
+  const [convertedPrice, setConvertedPrice] = useState(null); 
   const navigate = useNavigate();
   const {
     requestPurchase,
@@ -41,9 +41,9 @@ const BuyNow = () => {
     };
 
     fetchProduce();
-  }, [productId]);
+  }, [getProduceById, productId]);
 
-  // Fetch ETH to Naira conversion after the product is loaded
+  
   useEffect(() => {
     const convertPrice = async () => {
       if (product && product.price) {
@@ -57,15 +57,22 @@ const BuyNow = () => {
     };
 
     convertPrice();
-  }, [product]);
+  }, [getETHinNaira, product]);
 
   const handlePurchase = async (produceId, quantity, price) => {
-    await requestPurchase(produceId, quantity, price);
+    console.log(produceId,quantity, price)
     if (quantity > 10) {
-      const uri = await generatePic(account, 'Aeroplane by the beach');
-      await userBonus('2');
-      await sendGiftcard(account, uri);
-    }
+      try{ const uri = await generatePic(account, 'Aeroplane by the beach');
+       await userBonus('2');
+       await sendGiftcard(account, uri);
+      }catch(err){
+       console.trace(err)
+      }
+     }
+    // eslint-disable-next-line no-undef
+    const finalPrice = BigInt((price * 10 ** 18).toFixed(0));
+    await requestPurchase(produceId, quantity, finalPrice.toString() );
+  
   };
 
   const handleQuantityChange = (value) => {
