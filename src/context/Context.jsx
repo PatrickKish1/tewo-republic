@@ -10,7 +10,7 @@ import {
 import {
   CONTRACT_ADDRESS,
   abi,
-  priceFeedABI,
+  priceFeedAbi,
   nftAbi,
   NFT_ADDRESS,
 } from "../constant";
@@ -105,13 +105,14 @@ export const WalletProvider = ({ children }) => {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
+        console.log("context account", accounts);
         setAccount(accounts[0]);
         setIsWalletConnected(true);
         const contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS);
         setTewoContract(contract);
       } catch (error) {
         console.log("Error connecting wallet. Please try again.");
-        console.error("Error connecting wallet:", error);
+        console.trace("Error connecting wallet:", error);
       }
     } else {
       console.log(
@@ -124,9 +125,11 @@ export const WalletProvider = ({ children }) => {
     if (web3) {
       try {
         const address = await resolveENS(name);
+        console.log(address);
         setEnsName(name);
         setAccount(address);
         setIsWalletConnected(true);
+        console.log(isWalletConnected);
         const contract = new web3.eth.Contract(abi, CONTRACT_ADDRESS);
         setTewoContract(contract);
       } catch (error) {
@@ -177,24 +180,72 @@ export const WalletProvider = ({ children }) => {
     }
   };
   const getAllProduce = async () => {
+    console.log(tewoContract, account);
     if (tewoContract && account) {
       try {
+        console.log("Fetching produce...");
         const produceList = await tewoContract.methods.getAllProduce().call();
-        console.log("All Produce:", produceList);
-        return produceList;
+
+        const formattedProduceList = await Promise.all(
+          produceList.map(async (produce) => {
+            // Convert price from wei to Ether
+            const priceInEth = web3.utils.fromWei(produce[4], "ether");
+
+            // Convert Ether price to Naira
+            const priceInNaira =await  getETHinNaira(priceInEth)
+
+            return {
+              produceId: Number(produce[0]),
+              farmer: produce[1],
+              name: produce[2],
+              description: produce[3],
+              price: Number(priceInNaira), 
+              quantity: Number(produce[5]),
+              imageUrl: produce[6],
+              available: produce[7],
+              company: produce[8],
+              location: produce[9],
+            };
+          })
+        );
+
+        console.log("Formatted Produce List:", formattedProduceList);
+        return formattedProduceList;
       } catch (error) {
         console.error("Error fetching all produce:", error);
       }
     }
   };
+
   const getProduceById = async (produceId) => {
     if (tewoContract && account) {
       try {
         const produce = await tewoContract.methods
           .getProduceById(produceId)
           .call();
-        console.log(`Produce with ID ${produceId}:`, produce);
-        return produce;
+
+        const priceInEth = web3.utils.fromWei(produce[4], "ether");
+
+        const priceInNaira =await  getETHinNaira(priceInEth)
+
+        const formattedProduce = {
+          produceId: Number(produce[0]),
+          farmer: produce[1],
+          name: produce[2],
+          description: produce[3],
+          price: Number(priceInNaira),
+          quantity: Number(produce[5]),
+          imageUrl: produce[6],
+          available: produce[7],
+          company: produce[8],
+          location: produce[9],
+        };
+
+        console.log(
+          `Formatted Produce with ID ${produceId}:`,
+          formattedProduce
+        );
+        return formattedProduce;
       } catch (error) {
         console.error(`Error fetching produce with ID ${produceId}:`, error);
       }
@@ -225,15 +276,35 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const getETHinNaira = async () => {
-    const price = (await web3.chainlink.getPrice(priceFeedAddress)).toString();
-    return Number(price) / 1500;
+  const getETHinNaira = async (amount) => {
+   try{
+    const web3 = new Web3(
+      "https://eth-mainnet.g.alchemy.com/v2/-1HcxcXHs_85UOch3fQuC3yUtDUl7OcU"
+    );
+    const chainlinkPlugin = new ChainlinkPlugin();
+    web3.registerPlugin(chainlinkPlugin);
+    const rawPrice = await web3.chainlink.getPrice("0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", priceFeedAbi);
+    console.log(rawPrice, "price");
+    const ethPriceInUSD = Number(rawPrice.answer.toString()) / 1e8;
+    console.log(ethPriceInUSD)
+
+    const usdToNairaRate = 1500;
+
+    const ethInNaira = amount * ethPriceInUSD * usdToNairaRate;
+
+    return ethInNaira;
+   }catch(err){
+    console.trace(err)
+   }
   };
 
   const resolveENS = async (name) => {
-    const web3 = new Web3(window.ethereum);
-    web3.registerPlugin(new EnsPlugin(Chain.SEPOLIA));
-    const resolvedName = web3.ens.getAddress(name);
+    const web3 = new Web3(
+      "https://eth-mainnet.g.alchemy.com/v2/-1HcxcXHs_85UOch3fQuC3yUtDUl7OcU"
+    );
+    web3.registerPlugin(new EnsPlugin(1));
+    const resolvedName = await web3.ens.getAddress(name);
+    console.log("name", resolvedName);
     return resolvedName;
   };
 
