@@ -25,7 +25,9 @@ At Tewo Republic, we’re making buying and selling farm easier and fairer for e
 
 ## Technology Used
 
-- Lisk Sepolia Testnet (Smart Contract): The contract is deployed to the Lisk blockchain and can be viewed on https://sepolia-blockscout.lisk.com/address/0xc77F608895D140997dDdEBD4e139cb1A53D0cf85
+- Lisk Sepolia Testnet (Smart Contract): The contracts are deployed to the Lisk blockchain and can be viewed on https://sepolia-blockscout.lisk.com/address/0xc77F608895D140997dDdEBD4e139cb1A53D0cf85
+
+https://sepolia-blockscout.lisk.com/address/0xc77F608895D140997dDdEBD4e139cb1A53D0cf85
 
 - Web3js Chainlink Plugin: The web3js chainlink is used to fetch the price of ETH/USD which is then converted to Naira
 

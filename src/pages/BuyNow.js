@@ -10,7 +10,7 @@ const BuyNow = () => {
   const [productData, setProductData] = useState([]);
   const [product, setProduct] = useState(null);
   const navigate = useNavigate();
-  const { requestPurchase, getAllProduce, getETHinNaira } = useWallet();
+  const { requestPurchase, getAllProduce, getETHinNaira,account, sendGiftcard,userBonus, generatePic } = useWallet();
 
   const [selectedImage, setSelectedImage] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -35,6 +35,14 @@ const BuyNow = () => {
     }
   }, [productData, productId]);
 
+  const handlePurchase = async(produceId, quantity, price) => {
+    await requestPurchase(produceId, quantity, price)
+    if(quantity > 10){
+      const uri = await generatePic(account,"Aeroplane by the beach")
+      await userBonus("2")
+      await sendGiftcard(account, uri)
+    }
+  }
   // Handle case where product is not found
   if (!product) {
     return <div className="container mx-auto px-4 py-8">Product not found.</div>;
@@ -121,7 +129,7 @@ const BuyNow = () => {
             </button>
           </div>
 
-          <button className="bg-green-500 text-white mb-[100px] px-6 py-2 rounded-md" onClick={() => requestPurchase(product.produceId, quantity, product.price)}>
+          <button className="bg-green-500 text-white mb-[100px] px-6 py-2 rounded-md" onClick={() => handlePurchase(product.produceId, quantity, product.price)}>
             Purchase
           </button>
         </div>
