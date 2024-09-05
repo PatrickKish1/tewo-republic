@@ -13,7 +13,7 @@ const Header = () => {
   const [notification, setNotification] = useState({ show: false, message: '' });
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const {ensName} = useWallet()
+  const {ensName, connectENS} = useWallet()
 
 
   // Check for existing wallet connection state on component mount
@@ -127,7 +127,7 @@ const Header = () => {
   {/* auth */}
   <button
     onClick={() => {
-      isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
+      isWalletConnected ? setShowDropdown(!showDropdown) : connectENS();
     }}
     className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
   >
