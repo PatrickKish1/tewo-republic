@@ -4,7 +4,7 @@ import tewoLogo from '../assets/tewo-logo.png';
 import walletIcon from '../assets/wallet.svg';
 import notificationIcon from '../assets/notification.svg';
 import Notification from './Notification';
-
+import { useWallet } from '../context/Context';
 const Header = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddresses, setWalletAddresses] = useState([]);
@@ -13,6 +13,7 @@ const Header = () => {
   const [notification, setNotification] = useState({ show: false, message: '' });
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const {ensName} = useWallet()
 
 
   // Check for existing wallet connection state on component mount
@@ -120,34 +121,39 @@ const Header = () => {
           </>
         )}
         <div className="relative">
-          <button
-            onClick={() => {
-              isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
-            }}
-            className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
-          >
-            <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
-            {isWalletConnected ? (
-              <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
-            ) : (
-              'Login With ENS'
-            )}
-          </button>
-          <>
-          <button
-            onClick={() => {
-              isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
-            }}
-            className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
-          >
-            <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
-            {isWalletConnected ? (
-              <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
-            ) : (
-              'Connect Wallet'
-            )}
-          </button>
-          </>
+          {/* auth */}
+         
+          <div className="relative flex space-x-4">
+  {/* auth */}
+  <button
+    onClick={() => {
+      isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
+    }}
+    className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+  >
+    <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
+    {isWalletConnected ? (
+      <span>{ensName? ensName : ""}</span>
+    ) : (
+      'Login With ENS'
+    )}
+  </button>
+
+  <button
+    onClick={() => {
+      isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
+    }}
+    className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+  >
+    <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
+    {isWalletConnected ? (
+      <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
+    ) : (
+      'Connect Wallet'
+    )}
+  </button>
+</div>
+
           {isWalletConnected && showDropdown && (
             <div
               ref={dropdownRef}

@@ -8,9 +8,11 @@ import JobsPage from './pages/ProductsPage';
 import GigsPage from './pages/GigsPage';
 import CreateGig from './pages/CreateGig';
 import BuyNow from './pages/BuyNow';
+import { WalletProvider } from './context/Context';
 
 function App() {
   return (
+    <WalletProvider>
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-100">
         <Header />
@@ -26,6 +28,7 @@ function App() {
         <Footer />
       </div>
     </Router>
+    </WalletProvider>
   );
 }
 

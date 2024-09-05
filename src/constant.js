@@ -294,6 +294,142 @@ export const abi =[
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getAllProduce",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "produceId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "farmer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quantity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string[]",
+            "name": "imageUrl",
+            "type": "string[]"
+          },
+          {
+            "internalType": "bool",
+            "name": "available",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "company",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct Tewo.Produce[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_produceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getProduceById",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "produceId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "farmer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quantity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string[]",
+            "name": "imageUrl",
+            "type": "string[]"
+          },
+          {
+            "internalType": "bool",
+            "name": "available",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "company",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct Tewo.Produce",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",

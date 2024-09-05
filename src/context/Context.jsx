@@ -146,6 +146,29 @@ export const WalletProvider = ({ children }) => {
       }
     }
   };
+  const getAllProduce = async () => {
+    if (tewoContract && account) {
+      try {
+        const produceList = await tewoContract.methods.getAllProduce().call();
+        console.log("All Produce:", produceList);
+        return produceList;
+      } catch (error) {
+        console.error("Error fetching all produce:", error);
+      }
+    }
+  };
+  const getProduceById = async (produceId) => {
+    if (tewoContract && account) {
+      try {
+        const produce = await tewoContract.methods.getProduceById(produceId).call();
+        console.log(`Produce with ID ${produceId}:`, produce);
+        return produce;
+      } catch (error) {
+        console.error(`Error fetching produce with ID ${produceId}:`, error);
+      }
+    }
+  };
+  
 
   const confirmDelivery = async (requestId) => {
     if (tewoContract && account) {
@@ -290,7 +313,10 @@ export const WalletProvider = ({ children }) => {
         payFarmer,
         getETHinNaira,
         connectENS,
-        userBonus
+        userBonus,
+        getAllProduce,
+        getProduceById,
+        ensName
       }}
     >
       {children}
