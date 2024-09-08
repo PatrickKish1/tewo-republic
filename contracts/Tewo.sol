@@ -223,6 +223,27 @@ contract Tewo {
     receive() external payable {}
 
     fallback() external payable {
-        // Optional: Add logic to handle unexpected calls
     }
+
+      /**
+     * @dev Fetch all produce listings.
+     * @return A list of all Produce structs.
+     */
+    function getAllProduce() external view returns (Produce[] memory) {
+        Produce[] memory produces = new Produce[](produceCount);
+        for (uint i = 1; i <= produceCount; i++) {
+            produces[i - 1] = allProduce[i];
+        }
+        return produces;
+    }
+
+    /**
+     * @dev Fetch a specific produce by its ID.
+     * @param _produceId The ID of the produce to fetch.
+     * @return The Produce struct for the given produceId.
+     */
+    function getProduceById(uint256 _produceId) external view returns (Produce memory) {
+        return allProduce[_produceId];
+    }
+
 }

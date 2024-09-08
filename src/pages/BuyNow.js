@@ -1,22 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ProductsData from '../components/Products';
 import addIcon from '../assets/add.svg'; // Path to add icon
 import dashIcon from '../assets/dash.svg'; // Path to dash icon
 import backArrow from '../assets/back-arrow.svg'; // Path to back arrow icon
+import { useWallet } from '../context/Context';
 
 const BuyNow = () => {
   const { productId } = useParams();
-  const product = ProductsData.find(p => p.id === productId);
+  const [product, setProduct] = useState(null);
+  const [convertedPrice, setConvertedPrice] = useState(null); 
   const navigate = useNavigate();
+  const {
+    requestPurchase,
+    getProduceById,
+    getETHinNaira,
+    account,
+    sendGiftcard,
+    userBonus,
+    generatePic,
+  } = useWallet();
 
-  const [selectedImage, setSelectedImage] = useState(product ? product.companyLogo : '');
+  const [selectedImage, setSelectedImage] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Handle case where product is not found
-  if (!product) {
-    return <div className="container mx-auto px-4 py-8">Product not found.</div>;
-  }
+  useEffect(() => {
+    // Fetch product data on component mount
+    const fetchProduce = async () => {
+      setIsLoading(true);
+      try {
+        const productData = await getProduceById(productId);
+        setProduct(productData);
+        if (productData.imageUrl && productData.imageUrl.length > 0) {
+          setSelectedImage(productData.imageUrl[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchProduce();
+  }, [getProduceById, productId]);
+
+  
+  useEffect(() => {
+    const convertPrice = async () => {
+      if (product && product.price) {
+        try {
+          const priceInNaira = await getETHinNaira(product.price);
+          setConvertedPrice(priceInNaira);
+        } catch (error) {
+          console.error("Error converting ETH to Naira:", error);
+        }
+      }
+    };
+
+    convertPrice();
+  }, [getETHinNaira, product]);
+
+  const handlePurchase = async (produceId, quantity, price) => {
+    console.log(produceId,quantity, price)
+    if (quantity > 10) {
+      try{ const uri = await generatePic(account, 'Aeroplane by the beach');
+       await userBonus('2');
+       await sendGiftcard(account, uri);
+      }catch(err){
+       console.trace(err)
+      }
+     }
+    // eslint-disable-next-line no-undef
+    const finalPrice = BigInt((price * 10 ** 18).toFixed(0));
+    await requestPurchase(produceId, quantity, finalPrice.toString() );
+  
+  };
 
   const handleQuantityChange = (value) => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity + value));
@@ -30,64 +87,54 @@ const BuyNow = () => {
     navigate('/products');
   };
 
+  if (isLoading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+  }
+
+  if (!product) {
+    return <div className="container mx-auto px-4 py-8">Product not found.</div>;
+  }
+
   return (
-    <div className="container mx-auto bg-white px-4 py-8">
+    <div className="container mx-auto bg-white px-4 py-8 relative">
       {/* Back Button */}
-      <button 
+      <button
         onClick={handleBackClick}
-        className="absolute top-[110px] left-8 flex items-center bg-white p-2 rounded-lg shadow-md"
+        className="absolute top-4 left-8 flex items-center bg-white p-2 rounded-lg shadow-md"
       >
         <img src={backArrow} alt="Back" className="w-6 h-6" />
         <span className="ml-2 text-lg font-semibold">Back</span>
       </button>
 
-      <div className="flex flex-col mt-5 md:flex-row">
+      <div className="flex flex-col md:flex-row mt-8">
         {/* Image Thumbnails */}
-        <div className="flex flex-col items-center md:mr-6">
-          <div className="space-y-4 ml-[90px] mt-8">
-            {/* Small Image 1 */}
-            <div
-              className={`w-20 h-20 p-1 rounded-lg ml-[80px] cursor-pointer border ${selectedImage === product.companyLogo ? 'border-[#ff0909] border-500' : 'opacity-50'}`}
-              onClick={() => handleImageClick(product.companyLogo)}
-            >
-              <img
-                src={product.companyLogo}
-                alt="Thumbnail 1"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-            {/* Small Image 2 */}
-            <div
-              className={`w-20 h-20 p-1 rounded-lg ml-[80px] cursor-pointer border ${selectedImage === 'https://www.shutterstock.com/image-photo/long-rice-burlap-sack-ears-600nw-1751879540.jpg' ? 'border-[#ff0909] border-500' : 'opacity-50'}`}
-              onClick={() => handleImageClick('https://www.shutterstock.com/image-photo/long-rice-burlap-sack-ears-600nw-1751879540.jpg')}
-            >
-              <img
-                src="https://www.shutterstock.com/image-photo/long-rice-burlap-sack-ears-600nw-1751879540.jpg"
-                alt="Thumbnail 2"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-            {/* Small Image 3 */}
-            <div
-              className={`w-20 h-20 p-1 rounded-lg ml-[80px] cursor-pointer border ${selectedImage === 'https://nairametrics.com/wp-content/uploads/2024/04/bag-of-rice.jpg' ? 'border-[#ff0909] border-500' : 'opacity-50'}`}
-              onClick={() => handleImageClick('https://nairametrics.com/wp-content/uploads/2024/04/bag-of-rice.jpg')}
-            >
-              <img
-                src="https://nairametrics.com/wp-content/uploads/2024/04/bag-of-rice.jpg"
-                alt="Thumbnail 3"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
+        <div className="flex flex-col items-center md:mr-8">
+          <div className="space-y-4">
+            {product.imageUrl.map((image, index) => (
+              <div
+                key={index}
+                className={`w-20 h-20 p-1 rounded-lg cursor-pointer border ${
+                  selectedImage === image ? 'border-[#ff0909] border-2' : 'opacity-50'
+                }`}
+                onClick={() => handleImageClick(image)}
+              >
+                <img
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Main Image with Border Div Card */}
-        <div className="relative flex-1 mb-[100px]">
-          <div className="absolute inset-0 flex justify-center items-center z-10">
-            <div className="w-[320px] h-[300px] p-1 rounded-lg border-[#ff0909] border-2">
+        {/* Main Image */}
+        <div className="flex-1">
+          <div className="flex justify-center items-center">
+            <div className="w-[320px] h-[300px] p-1 rounded-lg border-2 border-[#ff0909]">
               <img
                 src={selectedImage}
-                alt="Main"
+                alt="Selected Produce"
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
@@ -95,31 +142,45 @@ const BuyNow = () => {
         </div>
 
         {/* Product Details */}
-        <div className="flex-1 ml-[20px] mt-[50px]">
-          <h1 className="text-2xl font-bold mb-4">{product.jobTitle}</h1>
-          <p className="text-gray-600 mb-2">{product.companyName}</p>
-          <p className="text-gray-800 mb-4">Rate: {product.rate}</p>
-          <p className="text-gray-500 mb-6">{product.productDescription}</p>
-          <p className="text-gray-800 mb-6">Duration: {product.duration}</p>
-          
+        <div className="flex-1 ml-6">
+          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+          <p className="text-gray-600 mb-2">Farmer: {product.farmer}</p>
+          <p className="text-gray-600 mb-2">Company: {product.company}</p>
+
+          {/* Conditionally render price */}
+          <p className="text-gray-800 mb-4">
+            Rate: {convertedPrice ? `₦${convertedPrice.toLocaleString()}` : 'Loading price...'}
+          </p>
+
+          <p className="text-gray-500 mb-6">{product.description}</p>
+
           <div className="flex items-center mb-4">
-            <label htmlFor="quantity" className="mr-4">Choose Quantity:</label>
-            <button onClick={() => handleQuantityChange(-1)} className="bg-gray-300 rounded-md p-2">
-              <img src={dashIcon} alt="Decrease Quantity" width={15} height={15}/>
+            <label htmlFor="quantity" className="mr-4">Quantity:</label>
+            <button
+              onClick={() => handleQuantityChange(-1)}
+              className="bg-gray-300 rounded-md p-2"
+            >
+              <img src={dashIcon} alt="Decrease Quantity" width={15} height={15} />
             </button>
             <input
               type="text"
               id="quantity"
               value={quantity}
               readOnly
-              className="text-center bg-white mb-2 w-12 border-0 mx-2 rounded-md p-2"
+              className="text-center bg-white mb-2 w-12 border mx-2 rounded-md p-2"
             />
-            <button onClick={() => handleQuantityChange(1)} className="bg-gray-300 rounded-md p-2">
-              <img src={addIcon} alt="Increase Quantity" width={15} height={15}/>
+            <button
+              onClick={() => handleQuantityChange(1)}
+              className="bg-gray-300 rounded-md p-2"
+            >
+              <img src={addIcon} alt="Increase Quantity" width={15} height={15} />
             </button>
           </div>
-          
-          <button className="bg-green-500 text-white mb-[100px] px-6 py-2 rounded-md">
+
+          <button
+            className="bg-green-500 text-white px-6 py-2 rounded-md"
+            onClick={() => handlePurchase(product.produceId, quantity, product.price)}
+          >
             Purchase
           </button>
         </div>

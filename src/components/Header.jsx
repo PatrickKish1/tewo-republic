@@ -184,8 +184,30 @@ const Header = () => {
             <span className="ml-2">
               {isWalletConnected
                 ? walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4)
-                : "Connect Wallet"}
+                : "Login With ENS"}
             </span>
+           
+          </button>
+          <button
+            onClick={
+              isWalletConnected
+                ? () => setIsDropdownOpen(!isDropdownOpen)
+                : handleWalletConnection
+            }
+            className="bg-[#ff0909] text-white px-5 py-2.5 rounded font-bold flex items-center ml-3"
+          >
+            <img
+              src="/assets/wallet.svg"
+              alt="Wallet Icon"
+              height={16}
+              width={16}
+            />
+            <span className="ml-2">
+              {isWalletConnected
+                ? walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4)
+                : "Login With ENS"}
+            </span>
+           
           </button>
           {isDropdownOpen && isWalletConnected && (
             <div

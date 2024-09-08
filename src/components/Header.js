@@ -4,6 +4,8 @@ import tewoLogo from '../assets/tewo-logo.png';
 import walletIcon from '../assets/wallet.svg';
 import notificationIcon from '../assets/notification.svg';
 import Notification from './Notification';
+import EnsLoginButton from './EnsButton';
+import { useWallet } from '../context/Context';
 
 const Header = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -13,9 +15,8 @@ const Header = () => {
   const [notification, setNotification] = useState({ show: false, message: '' });
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { ensName, connectENS, connectWallet, account } = useWallet();
 
-
-  // Check for existing wallet connection state on component mount
   useEffect(() => {
     const loadWallet = async () => {
       const storedWallet = localStorage.getItem('activeWallet');
@@ -37,14 +38,15 @@ const Header = () => {
   const handleWalletConnection = async () => {
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await connectWallet()
         setIsWalletConnected(true);
-        setWalletAddresses(accounts);
-        setActiveWallet(accounts.length > 1 ? '' : accounts[0]); // Set active wallet if only one
-        localStorage.setItem('activeWallet', accounts.length > 1 ? '' : accounts[0]); // Save to local storage
-        localStorage.setItem('isWalletConnected', 'true'); // Mark wallet as connected
+        setWalletAddresses(account);
+        setActiveWallet(account);
+        localStorage.setItem('activeWallet', account);
+        localStorage.setItem('isWalletConnected', 'true');
         setNotification({ show: true, message: 'Wallet connected!' });
       } catch (error) {
+        console.trace(error)
         setNotification({ show: true, message: 'Failed to connect wallet.' });
       }
     } else {
@@ -57,28 +59,14 @@ const Header = () => {
     setWalletAddresses([]);
     setActiveWallet('');
     setShowDropdown(false);
-    localStorage.removeItem('activeWallet'); // Remove from local storage
-    localStorage.setItem('isWalletConnected', 'false'); // Mark wallet as disconnected
+    localStorage.removeItem('activeWallet');
+    localStorage.setItem('isWalletConnected', 'false');
     setNotification({ show: true, message: 'Wallet disconnected!' });
-    navigate('/'); // Redirect to home page
+    navigate('/');
+  
+    window.location.reload();
   };
 
-  const handleWalletSelection = (address) => {
-    setActiveWallet(address);
-    setNotification({ show: true, message: `Switched to wallet ${address.slice(0, 6)}...${address.slice(-4)}` });
-    setShowDropdown(false);
-    localStorage.setItem('activeWallet', address); // Save selected wallet to local storage
-  };
-
-  const handleJobsNavigation = () => {
-    if (isWalletConnected) {
-      navigate('/products');
-    } else {
-      setNotification({ show: true, message: 'Please connect your wallet to access this page.' });
-    }
-  };
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -91,6 +79,8 @@ const Header = () => {
     };
   }, []);
 
+  const userConnected = isWalletConnected || !!ensName;
+
   return (
     <header className="flex items-center justify-between p-5 bg-white border-b border-gray-200 relative">
       <div className="flex items-center">
@@ -101,14 +91,14 @@ const Header = () => {
       
       <nav className="flex-1 flex ml-[120px] justify-center space-x-6">
         <Link to="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-        <button onClick={handleJobsNavigation} className="text-gray-700 hover:text-gray-900">
+        <button onClick={() => navigate('/products')} className="text-gray-700 hover:text-gray-900">
           Products
         </button>
         <Link to="#about" className="text-gray-700 hover:text-gray-900">About</Link>
       </nav>
       
       <div className="flex items-center space-x-4">
-        {isWalletConnected && (
+        {userConnected && (
           <>
             <img src={notificationIcon} alt="Notifications" className="w-6 h-6 cursor-pointer" />
             <Link to="/creategig" className="border-2 border-[#a3a380] text-[#a3a380] bg-white px-4 py-[7px] rounded font-bold">
@@ -119,46 +109,42 @@ const Header = () => {
             </Link>
           </>
         )}
-        <div className="relative">
-          <button
-            onClick={() => {
-              isWalletConnected ? setShowDropdown(!showDropdown) : handleWalletConnection();
-            }}
-            className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
-          >
-            <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
-            {isWalletConnected ? (
-              <span>{activeWallet.slice(0, 6) + '...' + activeWallet.slice(-4)}</span>
-            ) : (
-              'Connect Wallet'
-            )}
-          </button>
-          {isWalletConnected && showDropdown && (
-            <div
-              ref={dropdownRef}
-              className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-20"
+
+        <div className="relative flex space-x-4">
+          {!userConnected && (
+            <>
+              {/* Ens login button */}
+              <EnsLoginButton 
+                isWalletConnected={isWalletConnected}
+                connectENS={connectENS}
+                walletIcon={walletIcon}
+              />
+              <button
+                onClick={handleWalletConnection}
+                className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+              >
+                <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
+                Connect Wallet
+              </button>
+            </>
+          )}
+
+          {userConnected && (
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
             >
-              {walletAddresses.length > 1 ? (
-                walletAddresses.map((address, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleWalletSelection(address)}
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
-                  >
-                    {address.slice(0, 6) + '...' + address.slice(-4)}
-                  </button>
-                ))
-              ) : (
-                <button
-                  onClick={handleWalletConnection}
-                  className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
-                >
-                  Connect Wallet
-                </button>
-              )}
+              <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
+              {/* Display ENS name if available, otherwise show the truncated wallet address */}
+              {ensName ? ensName : account.slice(0, 6) + '...' + account.slice(-4)}
+            </button>
+          )}
+
+          {userConnected && showDropdown && (
+            <div ref={dropdownRef} className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-20">
               <button
                 onClick={handleWalletDisconnection}
-                className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left mt-2"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
               >
                 Disconnect
               </button>
@@ -166,7 +152,7 @@ const Header = () => {
           )}
         </div>
       </div>
-      {/* Notification component */}
+
       <Notification
         message={notification.message}
         show={notification.show}
