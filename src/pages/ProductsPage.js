@@ -1,3 +1,4 @@
+// ProductsPage.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIcon from "../assets/search.svg";
@@ -11,6 +12,7 @@ import profileFillIcon from "../assets/profile-fill.svg";
 import calendarIcon from "../assets/calender.svg";
 import moneyIcon from "../assets/money.svg";
 import { useWallet } from "../context/Context";
+import Loading from '../components/Loading';
 
 const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,20 +24,25 @@ const ProductsPage = () => {
   const navigate = useNavigate();
   const { getAllProduce, isWalletConnected, getETHinNaira } = useWallet();
 
+  // 2-second delay timer before showing the content
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer); // Clear the timer on unmount
+  }, []);
+
   // Fetch produce data
   useEffect(() => {
     const fetchProduce = async () => {
       try {
         const produce = await getAllProduce();
-        console.log(produce)
         if (produce) {
-          
           setProducts(produce);
         }
       } catch (err) {
         setError("Failed to load produce.");
-      } finally {
-        setLoading(false);
       }
     };
     if (isWalletConnected) {
@@ -43,7 +50,7 @@ const ProductsPage = () => {
     }
   }, [getAllProduce, isWalletConnected]);
 
-  
+  // Fetch ETH to Naira conversion rate
   useEffect(() => {
     const fetchEthInNaira = async () => {
       try {
@@ -57,7 +64,11 @@ const ProductsPage = () => {
   }, [getETHinNaira]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {

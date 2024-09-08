@@ -8,7 +8,7 @@ import instagramIcon from "../assets/instagram-white.svg";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#1c1e21] text-white py-8">
+    <footer className="bg-[#071d3d] text-white py-8">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start px-4">
         {/* Logo and Copyright */}
         <div className="mb-6 md:mb-0 md:ml-[80px]"> {/* Added margin-left for more spacing */}

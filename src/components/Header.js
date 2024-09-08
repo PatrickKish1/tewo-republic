@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import tewoLogo from '../assets/tewo-logo.png';
 import walletIcon from '../assets/wallet.svg';
+import chevronDown from '../assets/chevron-down.svg';
 import notificationIcon from '../assets/notification.svg';
 import Notification from './Notification';
 import EnsLoginButton from './EnsButton';
@@ -17,6 +18,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { ensName, connectENS, connectWallet, account } = useWallet();
 
+  // Ensure wallet persists across refreshes
   useEffect(() => {
     const loadWallet = async () => {
       const storedWallet = localStorage.getItem('activeWallet');
@@ -38,15 +40,16 @@ const Header = () => {
   const handleWalletConnection = async () => {
     if (window.ethereum) {
       try {
-        const accounts = await connectWallet()
+        const accounts = await connectWallet();
         setIsWalletConnected(true);
+        console.log({ accounts }, { walletAddresses }, { activeWallet });
         setWalletAddresses(account);
         setActiveWallet(account);
         localStorage.setItem('activeWallet', account);
         localStorage.setItem('isWalletConnected', 'true');
         setNotification({ show: true, message: 'Wallet connected!' });
       } catch (error) {
-        console.trace(error)
+        console.trace(error);
         setNotification({ show: true, message: 'Failed to connect wallet.' });
       }
     } else {
@@ -63,10 +66,11 @@ const Header = () => {
     localStorage.setItem('isWalletConnected', 'false');
     setNotification({ show: true, message: 'Wallet disconnected!' });
     navigate('/');
-  
+
     window.location.reload();
   };
 
+  // Handle outside clicks to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -79,32 +83,41 @@ const Header = () => {
     };
   }, []);
 
+  // Trigger notification if user clicks on 'Products' without a connected wallet
+  const handleProductsClick = () => {
+    if (!isWalletConnected) {
+      setNotification({ show: true, message: 'Please connect your wallet first.' });
+    } else {
+      navigate('/products');
+    }
+  };
+
   const userConnected = isWalletConnected || !!ensName;
 
   return (
-    <header className="flex items-center justify-between p-5 bg-white border-b border-gray-200 relative">
+    <header className="flex items-center justify-between p-5 bg-[#401ebcaf] border-b border-gray-200 relative">
       <div className="flex items-center">
         <Link to="/">
           <img src={tewoLogo} alt="EquiBloc Logo" height={40} width={160} />
         </Link>
       </div>
-      
+
       <nav className="flex-1 flex ml-[120px] justify-center space-x-6">
-        <Link to="/" className="text-gray-700 hover:text-gray-900">Home</Link>
-        <button onClick={() => navigate('/products')} className="text-gray-700 hover:text-gray-900">
+        <Link to="/" className="text-white text-700 hover:text-gray-900">Home</Link>
+        <button onClick={handleProductsClick} className="text-white text-700 hover:text-gray-900">
           Products
         </button>
-        <Link to="#about" className="text-gray-700 hover:text-gray-900">About</Link>
+        <Link to="#about" className="text-white text-700 hover:text-gray-900">About</Link>
       </nav>
-      
+
       <div className="flex items-center space-x-4">
         {userConnected && (
           <>
             <img src={notificationIcon} alt="Notifications" className="w-6 h-6 cursor-pointer" />
-            <Link to="/creategig" className="border-2 border-[#a3a380] text-[#a3a380] bg-white px-4 py-[7px] rounded font-bold">
+            <Link to="/creategig" className="border-2 border-[#15d3e1] text-white bg-transparent px-4 py-[7px] rounded font-bold">
               Sell
             </Link>
-            <Link to="/products" className="bg-[#d6ce93] text-white px-4 py-2 rounded font-bold">
+            <Link to="/products" className="bg-[#15d3e1] text-white px-4 py-2 rounded font-bold">
               Buy
             </Link>
           </>
@@ -114,14 +127,14 @@ const Header = () => {
           {!userConnected && (
             <>
               {/* Ens login button */}
-              <EnsLoginButton 
+              <EnsLoginButton
                 isWalletConnected={isWalletConnected}
                 connectENS={connectENS}
                 walletIcon={walletIcon}
               />
               <button
                 onClick={handleWalletConnection}
-                className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+                className="bg-[#15d3e1] text-white px-5 py-2.5 rounded-[30px] font-bold flex items-center"
               >
                 <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
                 Connect Wallet
@@ -132,19 +145,20 @@ const Header = () => {
           {userConnected && (
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="bg-[#d6ce93] text-white px-5 py-2.5 rounded font-bold flex items-center"
+              className="bg-[#15d3e1] text-white px-5 py-2.5 rounded-[30px] font-bold flex items-center"
             >
               <img src={walletIcon} alt="Wallet Icon" className="w-4 h-4 mr-2" />
               {/* Display ENS name if available, otherwise show the truncated wallet address */}
               {ensName ? ensName : account.slice(0, 6) + '...' + account.slice(-4)}
+              <img src={chevronDown} alt="Chevron Icon" className="w-5 h-4 ml-2" />
             </button>
           )}
 
           {userConnected && showDropdown && (
-            <div ref={dropdownRef} className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-20">
+            <div ref={dropdownRef} className="absolute right-0 mt-[50px] py-2 w-48 bg-white rounded-md shadow-lg z-20">
               <button
                 onClick={handleWalletDisconnection}
-                className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
+                className="block px-4 py-1 text-gray-800 hover:bg-gray-200 w-full text-left"
               >
                 Disconnect
               </button>

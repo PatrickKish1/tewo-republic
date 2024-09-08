@@ -4,6 +4,7 @@ import addIcon from '../assets/add.svg'; // Path to add icon
 import dashIcon from '../assets/dash.svg'; // Path to dash icon
 import backArrow from '../assets/back-arrow.svg'; // Path to back arrow icon
 import { useWallet } from '../context/Context';
+import Loading from '../components/Loading'
 
 const BuyNow = () => {
   const { productId } = useParams();
@@ -88,7 +89,11 @@ const BuyNow = () => {
   };
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <Loading />
+      </div>
+    );
   }
 
   if (!product) {
@@ -106,10 +111,10 @@ const BuyNow = () => {
         <span className="ml-2 text-lg font-semibold">Back</span>
       </button>
 
-      <div className="flex flex-col md:flex-row mt-8">
+      <div className="flex flex-col md:flex-row mt-[100px] ">
         {/* Image Thumbnails */}
         <div className="flex flex-col items-center md:mr-8">
-          <div className="space-y-4">
+          <div className="space-y-4 ml-[70px]">
             {product.imageUrl.map((image, index) => (
               <div
                 key={index}
@@ -178,7 +183,7 @@ const BuyNow = () => {
           </div>
 
           <button
-            className="bg-green-500 text-white px-6 py-2 rounded-md"
+            className="bg-green-500 text-white px-6 py-2 mb-[100px] rounded-md"
             onClick={() => handlePurchase(product.produceId, quantity, product.price)}
           >
             Purchase

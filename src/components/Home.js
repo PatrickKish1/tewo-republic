@@ -17,6 +17,7 @@ import partnerImage8 from '../assets/meta-logo.png';
 import twitterIcon from '../assets/TwitterX.svg';
 import instagramIcon from '../assets/Instagram.svg';
 import linkedinIcon from '../assets/LinkedIn.svg';
+import techComm from '../assets/tech-comm.jpg'
 import Products from './Products';
 import productImage1 from '../assets/rice-1.jpg';
 import productImage2 from '../assets/rice-2.jpg';
@@ -36,14 +37,17 @@ function Home() {
           <img src={bgHexagon1} alt="Background Hexagon" width={280} height={280} />
         </div>
 
+        <div>
+          <img src={techComm} alt="community" width={1100} className='ml-[40px] mb-[120px]' />
+        </div>
+
         <div className="max-w-1/2 z-10 mb-[400px] ml-10 relative">
           <h2 className="text-gray-800 text-lg mt-4 mb-6">Looking For Affordable Products From Trusted Sources?!</h2>
-          <h3 className="text-red-600 text-5xl font-bold mb-2">Tewo Republic Got You!</h3>
+          <h3 className="text-red-600 text-4xl font-bold mb-2">Tewo Republic Got You!</h3>
           <p className="text-gray-500 text-lg mb-2">Connect your wallet to get started</p>
           <Link>
-            <button className="bg-green-600 text-white px-8 py-2 rounded-md font-bold">Get Started</button>
+            <button className="bg-[#155ce1] bg-600 text-white px-8 py-2 rounded-md font-bold">Get Started</button>
           </Link>
-          
         </div>
 
         <div className="relative z-10 mb-[80px]">
@@ -51,7 +55,7 @@ function Home() {
             <img src={bgHexagon2} alt="Background Hexagon" width={280} height={280} />
           </div>
           <div className="relative z-10 mr-24 mb-5">
-            <img src="https://img.buzzfeed.com/buzzfeed-static/static/2023-02/22/3/asset/5683c53a7513/sub-buzz-863-1677035525-1.jpg?crop=2923:1706;0,335" alt="Girl Coding Illustration" width={480} height={480} className='rounded-lg h-[420px] mb-[90px]'/>
+            <img src="https://img.freepik.com/free-vector/team-programmers-working-program-code-with-laptops-teamwork-male-female-professional-testers-coders-flat-vector-illustration-software-development-programming-lesson-concept_74855-22051.jpg" alt="Girl Coding Illustration" width={530} height={530} className='rounded-lg h-[420px] mb-[90px]'/>
           </div>
         </div>
       </section>
@@ -156,7 +160,7 @@ function Home() {
             <img src={bgHexagon2} alt="Background Hexagon" width={200} height={200} />
           </div>
           <div className="relative z-10">
-            <img src="https://img.buzzfeed.com/buzzfeed-static/static/2023-02/22/3/asset/5683c53a7513/sub-buzz-863-1677035525-1.jpg?crop=2923:1706;0,335" alt="Agrobiz Team" className="rounded-lg" width={500} height={500} />
+            <img src="https://miro.medium.com/v2/resize:fit:768/1*4XpsstX0UCrKvasLFL5Csg.png" alt="Agrobiz Team" className="rounded-lg" width={1200} height={1200} />
           </div>
         </div>
       </section>
