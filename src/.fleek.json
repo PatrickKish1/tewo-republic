@@ -2,8 +2,7 @@
     "redirects": [
       {
         "source": "/*",
-        "destination": "/index.html",
-        "sources" : "/*"
+        "destination": "/index.html"
       }
     ]
   }
